@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<title>Hash Miner</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<base target="_blank">
+</head>
+<body>
+<h2>Hash Mining</h2>
+
+<script type="module">
+  const challenge = crypto.getRandomValues(new Uint8Array(16)).toHex();
+  const difficulty = 16;
+
+  pow(challenge, difficulty)
+      .then((nonce) => console.log('nonce', nonce))
+      .catch((err) => console.error(err));
+</script>
+</body>
+</html>

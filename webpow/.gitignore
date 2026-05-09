@@ -1,0 +1,5 @@
+node_modules
+.tmp
+dist/index.js
+dist/index.js.map
+asmjs-tmp.js
