@@ -12,7 +12,7 @@ class ServiceForward {
 
   Future<Response> forward(Request request, String? pow) async {
     if (pow == null) {
-      return Response.movedPermanently('${request.url.host}/notclawdbot.html?url=${request.url.toString()}');
+      return Response.found('${request.url.host}/notclawdbot.html?url=${request.url.toString()}');
     }
 
     return _clientForward.forward(request);

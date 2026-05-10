@@ -440,7 +440,7 @@ if(__webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target
 
 //# sourceMappingURL=index.js.map</script></head>
 <body>
-<h2>Hash Mining</h2>
+<h2>Loading...</h2>
 
 <script type="module">
 

@@ -36,7 +36,7 @@ class ControllerProxy {
     final String nonce = request.url.queryParameters['nonce']!;
     final String url = request.url.queryParameters['url'] ?? '';
     if (await _service.verifyPow(url, nonce)) {
-      return Response.movedPermanently('/$url', headers: {
+      return Response.found('/$url', headers: {
         'Set-Cookie': '$cookieId=$nonce'
       });
     }
