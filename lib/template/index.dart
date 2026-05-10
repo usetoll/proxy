@@ -2,7 +2,7 @@ final index = '''
 <!doctype html>
 <html>
 <head>
-<title>Hash Miner</title>
+<title>Loading...</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 <base target="_blank">
