@@ -12,10 +12,11 @@ import 'package:shelf/shelf_io.dart';
 void main(List<String> args) async {
   final ip = InternetAddress.anyIPv4;
   final String target = Platform.environment['TARGET'] ?? '';
+  final String difficulty = Platform.environment['DIFFICULTY'] ?? '16';
 
   final ClientForward clientForward = ClientForward(target);
   final ServiceTemplating templating = ServiceTemplating();
-  final ServicePow toll = ServicePow();
+  final ServicePow toll = ServicePow(int.parse(difficulty));
   final ServiceForward serviceProxy = ServiceForward(clientForward, templating, toll);
 
   final ControllerProxy controller = ControllerProxy(serviceProxy);

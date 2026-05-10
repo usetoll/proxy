@@ -11,7 +11,7 @@ class ServiceForward {
   ServiceForward(this._clientForward, this._templating, this._toll);
 
   Future<Response> forward(Request request, String? pow) async {
-    if (await _toll.verify(pow) == false) {
+    if (pow == null) {
       return Response.movedPermanently('${request.url.host}/notclawdbot.html?url=${request.url.toString()}');
     }
 
@@ -19,10 +19,10 @@ class ServiceForward {
   }
 
   Future<String> getWebPage(String url) async {
-    return _templating.render(url);
+    return _templating.render(url, _toll.computeChallenge(url), _toll.difficulty);
   }
 
-  Future<bool> verifyPow(String pow) async {
-    return _toll.verify(pow);
+  Future<bool> verifyPow(String url, String nonce) async {
+    return _toll.verifyPow(challenge: _toll.computeChallenge(url), nonce: nonce);
   }
 }

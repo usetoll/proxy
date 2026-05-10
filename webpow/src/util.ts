@@ -21,7 +21,8 @@ export function fillTmpl(
   tmpl: string,
   params: { [key: string] : number }
 ) {
-  return tmpl.replace(/__(\w+)__/g, (_, $1) => {
+  // glsl is embedded in base64 to avoid issue with dart templating
+  return atob(tmpl).replace(/__(\w+)__/g, (_, $1) => {
     return params[$1] + ''
   })
 }

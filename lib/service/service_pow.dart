@@ -1,6 +1,40 @@
-class ServicePow {
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
-  Future<bool> verify(String? proof) async {
-    return  proof != null;
+class ServicePow {
+  final int difficulty;
+
+  ServicePow(this.difficulty);
+
+  String computeChallenge(String url) {
+    return "4kYylQ9JZfeSk4+hJTq/6g==";
   }
+
+  bool verifyPow({
+    required String challenge,
+    required String nonce,
+  }) {
+    final total = base64Decode(challenge) + base64Decode(nonce);
+
+    final digest = sha256.convert(total);
+    final hashBytes = digest.bytes;
+
+    // Count leading zero bits
+    int leadingZeros = 0;
+    for (final byte in hashBytes) {
+      if (byte == 0) {
+        leadingZeros += 8;
+        continue;
+      }
+      int b = byte;
+      while ((b & 0x80) == 0) {
+        leadingZeros++;
+        b <<= 1;
+      }
+      break;
+    }
+
+    return leadingZeros >= difficulty;
+  }
+
 }

@@ -9,7 +9,7 @@ class ControllerProxy {
 
   Future<Response> handle(Request request) {
     if (request.url.path.startsWith('notclawdbot.html') &&
-        request.url.queryParameters.containsKey('pow')) {
+        request.url.queryParameters.containsKey('nonce')) {
       return handlePowVerify(request);
     }
 
@@ -20,10 +20,10 @@ class ControllerProxy {
     final cookies = request.headers['Cookie'];
     final regex = RegExp('(?:^|;)\\s*$cookieId=([^;]*)');
     final match = regex.firstMatch(cookies ?? '');
-    final pow = match?.group(1)?.trim();
-    print('pow=$pow, regex=$cookies');
+    final nonce = match?.group(1)?.trim();
+    print('nonce=$nonce, regex=$cookies');
 
-    return _service.forward(request, pow);
+    return _service.forward(request, nonce);
   }
 
   Future<Response> handleWebPage(Request request) async {
@@ -33,11 +33,11 @@ class ControllerProxy {
   }
 
   Future<Response> handlePowVerify(Request request) async {
-    final String pow = request.url.queryParameters['pow']!;
+    final String nonce = request.url.queryParameters['nonce']!;
     final String url = request.url.queryParameters['url'] ?? '';
-    if (await _service.verifyPow(pow)) {
+    if (await _service.verifyPow(url, nonce)) {
       return Response.movedPermanently('/$url', headers: {
-        'Set-Cookie': '$cookieId=$pow'
+        'Set-Cookie': '$cookieId=$nonce'
       });
     }
 

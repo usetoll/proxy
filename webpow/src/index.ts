@@ -27,7 +27,7 @@ function eventHandler(resolve: (nonce: string) => void, reject: (reason?: any) =
         nonce[i] = bswap(nonce[i])
       }
       const bytes = new Uint8Array(nonce.buffer)
-      resolve(bytes.toString());
+      resolve(toB64(bytes));
     },
     onError(err) {
       reject(err);
@@ -35,30 +35,29 @@ function eventHandler(resolve: (nonce: string) => void, reject: (reason?: any) =
   }
 }
 
-function fromHex(hex: string): Uint8Array {
-  // Strip optional "0x" prefix and any whitespace
-  const cleaned = hex.replace(/^0x/i, '').replace(/\s+/g, '');
-
-  if (cleaned.length % 2 !== 0) {
-    throw new Error(`Invalid hex string: odd length (${cleaned.length})`);
-  }
-
-  if (!/^[0-9a-fA-F]*$/.test(cleaned)) {
-    throw new Error('Invalid hex string: contains non-hex characters');
-  }
-
-  const bytes = new Uint8Array(cleaned.length / 2);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(cleaned.substr(i * 2, 2), 16);
+export function fromB64(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
   }
   return bytes;
+}
+
+export function toB64(bytes: Uint8Array): string {
+  let binaryString = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binaryString += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binaryString);
 }
 
 export async function pow(challenge: string, difficulty: number): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     webgl2.init(eventHandler(resolve, reject))
+    console.log('challenge', challenge);
 
-    const words = new Uint32Array(fromHex(challenge).buffer)
+    const words = new Uint32Array(fromB64(challenge).buffer)
     const masks = new Uint32Array(2)
 
     for (let i = 0; i < 4; i++) {

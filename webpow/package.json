@@ -11,8 +11,7 @@
   "keywords": [
     "proof-of-work",
     "sha256",
-    "crypto",
-    "webgpu"
+    "crypto"
   ],
   "main": "dist/index.js",
   "type": "module",

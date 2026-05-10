@@ -1,4 +1,4 @@
-import FRAG_SHADER from './assets/webgl2.glsl'
+import FRAG_SHADER from './assets/webgl2.b64.glsl'
 import {WebGL2 as GL} from './webapi-const'
 import {randU32, sleep, fillTmpl} from './util'
 import {LoadManager} from './load-manager'

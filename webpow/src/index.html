@@ -10,12 +10,30 @@
 <h2>Hash Mining</h2>
 
 <script type="module">
-  const challenge = crypto.getRandomValues(new Uint8Array(16)).toHex();
-  const difficulty = 16;
 
-  pow(challenge, difficulty)
-      .then((nonce) => console.log('nonce', nonce))
-      .catch((err) => console.error(err));
+    /*
+    const challenge = '{{{challenge}}}';
+    const difficulty   = {{{difficulty}}};
+    const url   = '{{{url}}}';
+
+    function commitResult(nonce) {
+        const params = new URLSearchParams(window.location.search);
+        params.set("nonce", nonce);
+        params.set("url", url);
+        window.location.search = params.toString();
+    }
+     */
+
+    const challenge = '4kYylQ9JZfeSk4+hJTq/6g==';
+    const difficulty   = 16
+
+    function commitResult(nonce) {
+        console.log('nonce', nonce);
+    }
+
+    pow(challenge, difficulty)
+        .then((nonce) => commitResult(nonce))
+        .catch((err) => console.error(err));
 </script>
 </body>
 </html>
