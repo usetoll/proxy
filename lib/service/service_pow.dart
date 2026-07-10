@@ -6,8 +6,18 @@ class ServicePow {
 
   ServicePow(this.difficulty);
 
+  static DateTime expiration() {
+    DateTime exp = DateTime
+        .now()
+        .toUtc()
+        .add(Duration(minutes: 1));
+
+    return exp.subtract(Duration(seconds: exp.second, milliseconds: exp.millisecond, microseconds: exp.microsecond));
+  }
+
   String computeChallenge(String url) {
-    return "4kYylQ9JZfeSk4+hJTq/6g==";
+    final timeChallenge = sha256.convert([expiration().microsecondsSinceEpoch]).bytes;
+    return base64Encode(timeChallenge.sublist(0, 16));
   }
 
   bool verifyPow({

@@ -10,12 +10,20 @@ class ServiceForward {
 
   ServiceForward(this._clientForward, this._templating, this._toll);
 
-  Future<Response> forward(Request request, String? pow) async {
-    if (pow == null) {
-      return Response.found('${request.url.host}/notclawdbot.html?url=${request.url.toString()}');
+  Future<Response> forward(Request request, List<String> nonces) async {
+    final url = request.url.toString();
+    final redirect = Response.found('${request.url.host}/notclawdbot.html?url=$url');
+
+    if (nonces.isEmpty) {
+      return redirect;
     }
 
-    return _clientForward.forward(request);
+    final List<bool> validated = await nonces.map((nonce) => verifyPow(url, nonce)).wait;
+    if (validated.contains(true)) {
+      return _clientForward.forward(request);
+    }
+
+    return redirect;
   }
 
   Future<String> getWebPage(String url) async {

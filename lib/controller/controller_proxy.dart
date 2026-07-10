@@ -1,9 +1,12 @@
+import 'dart:io';
+
+import 'package:notclawdbot/service/service_pow.dart';
 import 'package:notclawdbot/service/service_proxy.dart';
 import 'package:shelf/shelf.dart';
 
 class ControllerProxy {
   final ServiceForward _service;
-  static const cookieId = 'NOTCLAWDBOT';
+  static const cookieId = 'USETOLL';
 
   ControllerProxy(this._service);
 
@@ -19,11 +22,13 @@ class ControllerProxy {
 
     final cookies = request.headers['Cookie'];
     final regex = RegExp('(?:^|;)\\s*$cookieId=([^;]*)');
-    final match = regex.firstMatch(cookies ?? '');
-    final nonce = match?.group(1)?.trim();
-    print('nonce=$nonce, regex=$cookies');
+    final Iterable<RegExpMatch> matches = regex.allMatches(cookies ?? '');
+    final List<String> nonces = matches
+        .map((match) => match.group(1)?.trim())
+        .whereType<String>()
+        .toList();
 
-    return _service.forward(request, nonce);
+    return _service.forward(request, nonces);
   }
 
   Future<Response> handleWebPage(Request request) async {
@@ -37,7 +42,7 @@ class ControllerProxy {
     final String url = request.url.queryParameters['url'] ?? '';
     if (await _service.verifyPow(url, nonce)) {
       return Response.found('/$url', headers: {
-        'Set-Cookie': '$cookieId=$nonce'
+        'Set-Cookie': '$cookieId=$nonce; Expires=${HttpDate.format(ServicePow.expiration())}'
       });
     }
 
