@@ -1,23 +1,16 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:notclawdbot/dto/source.dart';
 
 class ServicePow {
   final int difficulty;
 
   ServicePow(this.difficulty);
 
-  static DateTime expiration() {
-    DateTime exp = DateTime
-        .now()
-        .toUtc()
-        .add(Duration(minutes: 1));
 
-    return exp.subtract(Duration(seconds: exp.second, milliseconds: exp.millisecond, microseconds: exp.microsecond));
-  }
-
-  String computeChallenge(String url) {
-    final timeChallenge = sha256.convert([expiration().microsecondsSinceEpoch]).bytes;
-    return base64Encode(timeChallenge.sublist(0, 16));
+  String computeChallenge(Source source, DateTime expiration) {
+    final challenge = sha256.convert([expiration.microsecondsSinceEpoch, source.hashCode]).bytes;
+    return base64Encode(challenge.sublist(0, 16));
   }
 
   bool verifyPow({

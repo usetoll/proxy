@@ -13,6 +13,7 @@ void main(List<String> args) async {
   final ip = InternetAddress.anyIPv4;
   final String target = Platform.environment['TARGET'] ?? '';
   final String difficulty = Platform.environment['DIFFICULTY'] ?? '16';
+  final String expiration = Platform.environment['SESSION_EXPIRATION_MIN'] ?? '1';
 
   final ClientForward clientForward = ClientForward(target);
   final ServiceTemplating templating = ServiceTemplating();
@@ -20,6 +21,8 @@ void main(List<String> args) async {
   final ServiceForward serviceProxy = ServiceForward(clientForward, templating, toll);
 
   final ControllerProxy controller = ControllerProxy(serviceProxy);
+
+  serviceProxy.startCron(Duration(minutes: int.parse(expiration)));
 
   final handler = Pipeline()
       .addMiddleware(logRequests())

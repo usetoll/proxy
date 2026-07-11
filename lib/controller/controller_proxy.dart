@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:notclawdbot/dto/source.dart';
 import 'package:notclawdbot/service/service_pow.dart';
 import 'package:notclawdbot/service/service_proxy.dart';
 import 'package:shelf/shelf.dart';
@@ -33,16 +34,16 @@ class ControllerProxy {
 
   Future<Response> handleWebPage(Request request) async {
     final String url = request.url.queryParameters['url']!;
-    final String page = await _service.getWebPage(url);
+    final String page = await _service.getWebPage(url, Source.fromRequest(request));
     return Response.ok(page, headers: {'Content-Type': 'text/html'});
   }
 
   Future<Response> handlePowVerify(Request request) async {
     final String nonce = request.url.queryParameters['nonce']!;
     final String url = request.url.queryParameters['url'] ?? '';
-    if (await _service.verifyPow(url, nonce)) {
+    if (await _service.verifyPow(Source.fromRequest(request), nonce)) {
       return Response.found('/$url', headers: {
-        'Set-Cookie': '$cookieId=$nonce; Expires=${HttpDate.format(ServicePow.expiration())}'
+        'Set-Cookie': '$cookieId=$nonce; Expires=${HttpDate.format(_service.nextExpirationDate)}'
       });
     }
 
