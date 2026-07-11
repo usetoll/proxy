@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:notclawdbot/client/client_forward.dart';
 import 'package:notclawdbot/controller/controller_proxy.dart';
 import 'package:notclawdbot/service/service_pow.dart';
@@ -15,7 +17,13 @@ void main(List<String> args) async {
   final String difficulty = Platform.environment['DIFFICULTY'] ?? '16';
   final String expiration = Platform.environment['SESSION_EXPIRATION_MIN'] ?? '1';
 
-  final ClientForward clientForward = ClientForward(target);
+  final httpClient = HttpClient()
+    ..maxConnectionsPerHost = 32
+    ..idleTimeout = const Duration(seconds: 30)
+    ..connectionTimeout = const Duration(seconds: 10);
+
+  final http.Client client = IOClient(httpClient);
+  final ClientForward clientForward = ClientForward(target, client);
   final ServiceTemplating templating = ServiceTemplating();
   final ServicePow toll = ServicePow(int.parse(difficulty));
   final ServiceForward serviceProxy = ServiceForward(clientForward, templating, toll);
