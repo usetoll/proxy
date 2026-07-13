@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:notclawdbot/dto/source.dart';
-import 'package:notclawdbot/service/service_pow.dart';
 import 'package:notclawdbot/service/service_proxy.dart';
 import 'package:shelf/shelf.dart';
 
