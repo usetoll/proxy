@@ -34,6 +34,8 @@ jobs:
         run: dart test
 
   build:
+    needs: quality
+    if: github.ref == 'refs/heads/main' && needs.quality.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
