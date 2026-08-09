@@ -10,6 +10,7 @@ class ServiceForward {
   final ClientForward _clientForward;
   final ServiceTemplating _templating;
   final ServicePow _toll;
+  final List<String> whitelist;
 
   DateTime _nextExpirationDate = DateTime.now();
 
@@ -17,7 +18,7 @@ class ServiceForward {
    return _nextExpirationDate;
  }
 
-  ServiceForward(this._clientForward, this._templating, this._toll);
+  ServiceForward(this._clientForward, this._templating, this._toll, this.whitelist);
 
   void startCron(Duration validityPeriod) {
     Timer.periodic(validityPeriod, (timer) {
@@ -29,8 +30,12 @@ class ServiceForward {
 
   Future<Response> forward(Request request, List<String> nonces) async {
     final url = request.url.toString();
-    final redirect = Response.found('${request.url.host}/notclawdbot.html?url=$url');
 
+    if (whitelist.contains(url)) {
+      return _clientForward.forward(request);
+    }
+
+    final redirect = Response.found('${request.url.host}/notclawdbot.html?url=$url');
     if (nonces.isEmpty) {
       return redirect;
     }
