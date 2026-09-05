@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Script to copy index.html with GL POw inside a dart variable in index.dart
+# Some replaces are need to avoid conflict with dart formatting.
+
+SRC="dist/index.html"
+DST="../lib/template/index.dart"
+
+npm run build
+
+[[ -f "$SRC" ]] || { echo "Source file not found: $SRC" >&2; exit 1; }
+mkdir -p "$(dirname "$DST")"
+
+tmp="$(mktemp)"
+
+awk '
+{
+  # $1 -> \$1
+  gsub(/\$1/, "\\$1")
+
+  # \w+ -> \\w+
+  gsub(/\\w\+/, "\\\\w+")
+
+  # VERTEX_SHADER = `\  -> VERTEX_SHADER = `\\
+  # only when the backslash is the LAST char on the line
+  sub(/VERTEX_SHADER = `\\$/, "VERTEX_SHADER = `\\\\")
+
+  print
+}
+' "$SRC" > "$tmp"
+
+{
+  printf "final index = '''\n"
+  cat "$tmp"
+  printf "\n''';\n"
+} > "$DST"
+
+rm -f "$tmp"
+echo "Generated: $DST"

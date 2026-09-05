@@ -43,6 +43,15 @@ export default {
       type: "global",
     },
   },
+  optimization: {
+    minimize: false,
+    splitChunks: false,
+    runtimeChunk: false,
+    concatenateModules: false,
+    mangleExports: false,
+    moduleIds: 'named',
+    chunkIds: 'named',
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html', // your HTML template
