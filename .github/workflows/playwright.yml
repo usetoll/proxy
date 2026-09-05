@@ -1,0 +1,37 @@
+name: Playwright Tests
+on:
+  workflow_call:
+
+jobs:
+  e2e-benchmark:
+    timeout-minutes: 60
+    runs-on: macos-14
+    defaults:
+      run:
+        working-directory: e2e
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install Dart SDK (latest, macOS ARM)
+      run: |
+        set -euo pipefail
+        DART_VERSION="3.10.4"
+        DART_ZIP_URL="https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_VERSION}/sdk/dartsdk-macos-arm64-release.zip"
+        curl -fL "$DART_ZIP_URL" -o /tmp/dartsdk.zip
+        unzip -q /tmp/dartsdk.zip -d "$HOME"
+        echo "$HOME/dart-sdk/bin" >> "$GITHUB_PATH"
+        "$HOME/dart-sdk/bin/dart" --version
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      run: npx playwright test
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
